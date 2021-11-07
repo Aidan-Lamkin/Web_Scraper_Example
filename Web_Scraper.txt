@@ -1,0 +1,45 @@
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+import csv
+
+PATH = "/Users/aidan/Desktop/chromedriver" #creates webdriver object based on driver location
+driver = webdriver.Chrome(PATH)
+
+#URL file example
+#list_of_urls = []
+# with open("FILENAME.csv", 'r') as URL_FILE:
+#   URL_FILE_READER = csv.reader(URL_FILE, delimiter = ',') *breaks up file by everytime there is a comma can change to whatever character
+#   for rows in URL_FILE_READER:
+#       list_of_urls.append(rows)
+#automatically closes file once it is read
+
+driver.get("https://cs.mines.edu/faculty-and-staff/")
+print(driver.title)#opens page and prints title
+
+info = driver.find_elements_by_class_name("dp-custom-field-value")
+
+names = driver.find_elements_by_class_name("entry-title")
+#using class names gets the text of names, position, room number, phone number, and email
+
+people = [['Name', 'Position','Room number', 'Phone number', 'Email']]
+person = []
+
+for i in range(0, len(info)):
+    text = (info[i].text).split('\n')
+    person = text
+    name = (names[i + 1].text)
+    person.insert(0, name)
+    people.append(person)
+#pulls info and puts it in list of lists called people
+
+with open('web_scraped_data', 'w') as web_scraped:
+    web_scraped_writer = csv.writer(web_scraped)
+    for i in range(0, len(people)):
+        web_scraped_writer.writerow(people[i])
+
+driver.quit()
+#writes people to csv file and quits the driver
